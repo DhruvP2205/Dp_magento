@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Ccc_Hello>
+            <version>0.1.0</version> 
+        </Ccc_Hello>
+    </modules>
+    <frontend>
+        <routers>
+            <Hello>
+                <use>standard</use>
+                <args>
+                    <module>Ccc_Hello</module>
+                    <frontName>hello</frontName>
+                </args>
+            </Hello>
+            <product>
+                <use>standard</use>
+                <args>
+                    <module>Ccc_Hello</module>
+                    <frontName>product</frontName>
+                </args>
+            </product>
+        </routers>
+    </frontend>
+    <!-- <global>
+        <blocks>
+            <customer>
+                <class>Ccc_Hello_Block</class>
+            </customer>
+        </blocks>
+    </global> -->
+</config>
