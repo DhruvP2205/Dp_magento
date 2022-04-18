@@ -42,18 +42,94 @@ class Dp_Category_Adminhtml_categoryController extends Mage_Adminhtml_Controller
 	 	}
  	}
 
- 	public function saveAction()
- 	{
- 		$postData = $this->getRequest()->getPost();
- 		$category = Mage::getModel('category/category');
- 		if($this->getRequest()->getParam('id'))
- 		{
- 			$postData = array_merge(['category_id' => $this->getRequest()->getParam('id')],$postData);
- 		}
- 		$category->setData($postData);
- 		$category->save();
- 		$this->_redirect('*/*/');
- 	}
+ 	protected function saveCategory($id)
+    {
+        $categoryRow = Mage::getModel('category/category');
+        $category = $categoryRow->load($id);
+        $categoryId = $category->category_id;
+        if ($category->parent_id == NULL) 
+        {
+            $path = $category->category_id;
+        }
+        else
+        {
+            $result=$categoryRow->load($category->parent_id);
+            $path = $result->path.'/'.$categoryId;
+        }
+        $category=$categoryRow->load($categoryId);
+        $category->path = $path;
+        
+        $update = $category->save();
+        if(!$update)
+        {
+            throw new Exception("System is unable to update.", 1);
+        }
+        
+    }
+
+    public function saveAction()
+    {
+        try 
+        {
+            if (!$this->getRequest()->getPost()) 
+            {
+                throw new Exception("Invalid request.", 1);
+            }
+            $path = '';
+            $postData = $this->getRequest()->getPost();
+            
+            unset($postData['form_key']);
+            $categoryRow = Mage::getModel('category/category');
+            $adapter = $categoryRow->getResource()->getReadConnection();
+            $id = $this->getRequest()->getParam('id');
+            if($id)
+            {
+                $categoryPath = $adapter->fetchOne("SELECT `path` FROM `category` WHERE `category_id` = {$id}");
+                $categoryRow->setData($postData);
+                if ($categoryRow->parent_id == NULL) 
+                {
+                    $categoryRow->parent_id = null;
+                }
+                $categoryRow->category_id = $id;
+                $categoryRow->updated_date = date('Y-m-d H:i:s');
+                $category = $categoryRow->save();
+                $this->saveCategory($category->category_id);
+                $query= $categoryRow->getCollection()->getSelect()->where("`path` LIKE '".$categoryPath.'/%'."'")->order('path');
+                $subcategories = $adapter->fetchAll($query);
+                foreach ($subcategories as $row) 
+                {
+                    $query= $categoryRow->getCollection()->getSelect()->where("`category_id` = {$row['parent_id']}")->order('path');
+                    $parent = $adapter->fetchRow($query);
+                    $newPath = $parent['path'].'/'.$row['category_id'];
+                    $row['path'] = $newPath;
+                    $row['updated_date'] = date('Y-m-d H:i:s');
+                    
+                    Mage::getModel('category/category')->setData($row)->save();
+                }
+            }
+            else
+            {
+                if ($postData['parent_id'] == null) 
+                {
+                    unset($postData['parent_id']);
+                }
+                $categoryRow->setData($postData);
+                $categoryRow->created_date = date('Y-m-d H:i:s');
+                
+                $category = $categoryRow->save();
+                if(!$category)
+                {
+                    throw new Exception("System is unable to insert.", 1);          
+                }
+                $this->saveCategory($category->category_id);
+            }
+            $this->_redirect('*/*/');
+        } 
+        catch (Exception $e) 
+        {
+            $this->_redirect('*/*/');
+        }
+    }
  	
  	public function deleteAction()
  	{

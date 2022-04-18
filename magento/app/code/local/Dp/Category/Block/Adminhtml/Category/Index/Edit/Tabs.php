@@ -14,10 +14,9 @@
     protected function _beforeToHtml()
     {
         $this->addTab('form_section', array(
-        'name' => Mage::helper('category')->__('Name'),
-        'content' => $this->getLayout()->createBlock('category/adminhtml_category_index_edit_tab_form')->toHtml(),));
-
-
+            'label' => Mage::helper('category')->__('Category Info.'),
+            'content' => $this->getLayout()->createBlock('category/adminhtml_category_index_edit_tab_form')->toHtml(),
+        ));
         return parent::_beforeToHtml();
     }
  }

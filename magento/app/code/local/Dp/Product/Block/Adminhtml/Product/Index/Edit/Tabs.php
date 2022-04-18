@@ -13,13 +13,14 @@ class Dp_Product_Block_Adminhtml_Product_Index_Edit_Tabs extends Mage_Adminhtml_
     protected function _beforeToHtml()
     {
         $this->addTab('form_section', array(
-        'name' => Mage::helper('product')->__('Name'),
-        'quantity' => Mage::helper('product')->__('Quantity'),
-        'price' => Mage::helper('product')->__('Price'),
-        'costPrice' => Mage::helper('product')->__('Cost Price'),
-        'sku' => Mage::helper('product')->__('SKU'),
-        'content' => $this->getLayout()->createBlock('product/adminhtml_product_index_edit_tab_form')->toHtml(),));
+            'label' => Mage::helper('product')->__('Product Info.'),
+            'content' => $this->getLayout()->createBlock('product/adminhtml_product_index_edit_tab_form')->toHtml(),
+        ));
 
+        $this->addTab('form_section1', array(
+            'label' => Mage::helper('product')->__('Product Media Info.'),
+            'content' => $this->getLayout()->createBlock('product/adminhtml_product_index_edit_tab_media')->toHtml(),
+        ));
 
         return parent::_beforeToHtml();
     }

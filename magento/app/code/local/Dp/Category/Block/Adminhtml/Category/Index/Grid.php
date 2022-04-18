@@ -19,6 +19,10 @@ class Dp_Category_Block_Adminhtml_Category_Index_Grid extends Mage_Adminhtml_Blo
     protected function _prepareCollection()
     {
         $collection = Mage::getResourceModel('category/category_collection');
+        foreach ($collection->getItems() as $col)
+        {
+            $col->path = $col->getPath();
+        }
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -38,6 +42,31 @@ class Dp_Category_Block_Adminhtml_Category_Index_Grid extends Mage_Adminhtml_Blo
         $this->addColumn('name', array(
             'header' => Mage::helper('category')->__('Name'),
             'index' => 'name',
+        ));
+
+        $this->addColumn('path', array(
+            'header' => Mage::helper('category')->__('Path'),
+            'index' => 'path',
+        ));
+
+        $this->addColumn('status', array(
+          'header'    => Mage::helper('category')->__('status'),
+          'index'     => 'status',
+          'type'      => 'options',
+          'options'    => array(
+                1 => 'Active',
+                2 => 'Inactive'
+            ),
+      ));
+
+        $this->addColumn('created_date', array(
+            'header' => Mage::helper('category')->__('Created Date'),
+            'index' => 'created_date',
+        ));
+
+        $this->addColumn('updated_date', array(
+            'header' => Mage::helper('category')->__('Updated Date'),
+            'index' => 'updated_date',
         ));
 
         return parent::_prepareColumns();

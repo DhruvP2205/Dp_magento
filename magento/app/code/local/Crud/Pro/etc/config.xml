@@ -63,7 +63,6 @@
                 <class>Crud_Pro_Block</class>
             </pro>
         </blocks>       
-
         <models>
             <pro>
                 <class>Crud_Pro_Model</class>
@@ -75,7 +74,6 @@
                     <pro>
                         <table>pro</table>
                     </pro>  
-
                 </entities>
             </pro_resource>
         </models>       

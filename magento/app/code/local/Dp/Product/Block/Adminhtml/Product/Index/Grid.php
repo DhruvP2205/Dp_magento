@@ -1,17 +1,14 @@
 <?php
 
-class Dp_Product_Block_Adminhtml_Product_Index_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class Dp_Product_Block_Adminhtml_Product_Index_Grid extends Mage_Adminhtml_Block_Catalog_Product_Grid
 {
-
     public function __construct()
     {
-        
         parent::__construct();
         $this->setId('product_index');
         $this->setDefaultSort('type');
         $this->setDefaultDir('asc');
         $this->setSaveParametersInSession(true);
-
     }
 
     /**

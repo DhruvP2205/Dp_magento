@@ -49,6 +49,11 @@
             <product>
                 <class>Dp_Product_Block</class>
             </product>
+            <adminhtml>
+                <rewrite>
+                    <catalog_product_grid>Dp_Product_Block_Catalog_Product_Grid</catalog_product_grid>
+                </rewrite>
+            </adminhtml>
         </blocks>
         <models>
             <product>
