@@ -57,7 +57,7 @@ class Dp_Category_Block_Adminhtml_Category_Index_Grid extends Mage_Adminhtml_Blo
                 1 => 'Active',
                 2 => 'Inactive'
             ),
-      ));
+        ));
 
         $this->addColumn('created_date', array(
             'header' => Mage::helper('category')->__('Created Date'),

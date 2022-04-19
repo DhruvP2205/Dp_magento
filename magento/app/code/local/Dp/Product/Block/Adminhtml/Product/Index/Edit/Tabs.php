@@ -18,7 +18,7 @@ class Dp_Product_Block_Adminhtml_Product_Index_Edit_Tabs extends Mage_Adminhtml_
         ));
 
         $this->addTab('form_section1', array(
-            'label' => Mage::helper('product')->__('Product Media Info.'),
+            'label' => Mage::helper('product')->__('Media Info.'),
             'content' => $this->getLayout()->createBlock('product/adminhtml_product_index_edit_tab_media')->toHtml(),
         ));
 

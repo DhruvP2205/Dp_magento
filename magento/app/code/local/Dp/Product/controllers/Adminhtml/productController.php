@@ -9,7 +9,7 @@ class Dp_Product_Adminhtml_productController extends Mage_Adminhtml_Controller_A
 		$this->renderLayout();
 	}
 
-	 public function newAction()
+    public function newAction()
 	{
 		$this->_forward('edit');
 	}
@@ -51,9 +51,12 @@ class Dp_Product_Adminhtml_productController extends Mage_Adminhtml_Controller_A
  			$postData = array_merge(['product_id'=>$this->getRequest()->getParam('id')],$postData);
  		}
  		$product->setData($postData);
+        Mage::dispatchEvent('product_before_save', array('product' => $product, 'request' => $this->getRequest()));
  		$product->save();
+        Mage::dispatchEvent('redirect_before', array('product' => $product, 'request' => $this->getRequest()));
  		$this->_redirect('*/*/');
  	}
+
  	public function deleteAction()
  	{
  		$id = (int)$this->getRequest()->getParam('id');
@@ -69,4 +72,3 @@ class Dp_Product_Adminhtml_productController extends Mage_Adminhtml_Controller_A
  		}
  	}
 }
-

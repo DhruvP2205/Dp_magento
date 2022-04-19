@@ -1,140 +1,28 @@
 <?php
-
-class Dp_Product_Block_Adminhtml_Product_Index_Edit_Tab_Media extends Mage_Adminhtml_Block_Widget
+class Dp_Product_Block_Adminhtml_Product_Index_Edit_Tab_Media extends Mage_Adminhtml_Block_Widget_Form
 {
-    protected $_uploaderType = 'uploader/multiple';
-
-    public function __construct()
+    protected function _prepareForm()
     {
-        parent::__construct();
-        $this->setTemplate('product/helper/gallery.phtml');
-    }
+        $form = new Varien_Data_Form();
+        $this->setForm($form);
+        $fieldset = $form->addFieldset('product_form', array('legend'=>Mage::helper('product')->__('Product Information')));
 
-    protected function _prepareLayout()
-    {
-        $this->setChild('uploader',
-           $this->getLayout()->createBlock($this->_uploaderType)
-        );
 
-        $this->getUploader()->getUploaderConfig()
-            ->setFileParameterName('image')
-            ->setTarget(Mage::getModel('adminhtml/url')->addSessionParam()->getUrl('*/product_gallery/upload'));
+        $fieldset->addField('name', 'text', array(
+         'label' => Mage::helper('product')->__('Name'),
+         'class' => 'required-entry',
+         'name' => 'name',
+         ));
 
-        $browseConfig = $this->getUploader()->getButtonConfig();
-        $browseConfig
-           ->setAttributes(array(
-               'accept' => $browseConfig->getMimeTypesByExtensions('gif, png, jpeg, jpg')
-           ));
-
-       Mage::dispatchEvent('product_gallery_prepare_layout', array('block' => $this));
-
-       return parent::_prepareLayout();
-    }
-
-    /**
-     * Retrive uploader block
-     *
-     * @return Mage_Uploader_Block_Multiple
-     */
-    public function getUploader()
-    {
-        return $this->getChild('uploader');
-    }
-
-    /**
-     * Retrive uploader block html
-     *
-     * @return string
-     */
-    public function getUploaderHtml()
-    {
-        return $this->getChildHtml('uploader');
-    }
-
-    public function getJsObjectName()
-    {
-        return $this->getHtmlId() . 'JsObject';
-    }
-
-    public function getAddImagesButton()
-    {
-        return $this->getButtonHtml(
-            Mage::helper('product')->__('Add New Images'),
-            $this->getJsObjectName() . '.showUploader()',
-            'add',
-            $this->getHtmlId() . '_add_images_button'
-        );
-    }
-
-    public function getImagesJson()
-    {
-        if(is_array($this->getElement()->getValue())) {
-            $value = $this->getElement()->getValue();
-            if(count($value['images'])>0) {
-                foreach ($value['images'] as &$image) {
-                    $image['url'] = Mage::getSingleton('product/product_media_config')
-                                        ->getMediaUrl($image['file']);
-                }
-                return Mage::helper('core')->jsonEncode($value['images']);
-            }
+        if ( Mage::getSingleton('adminhtml/session')->getProData() )
+        {
+            $form->setValues(Mage::getSingleton('adminhtml/session')->getProData());
+            Mage::getSingleton('adminhtml/session')->setProData(null);
+        } 
+        elseif ( Mage::registry('product_data') ) 
+        {
+            $form->setValues(Mage::registry('product_data')->getData());
         }
-        return '[]';
-    }
-
-    public function getImagesValuesJson()
-    {
-        $values = array();
-        foreach ($this->getMediaAttributes() as $attribute) {
-            /* @var $attribute Mage_Eav_Model_Entity_Attribute */
-            $values[$attribute->getAttributeCode()] = $this->getElement()->getDataObject()->getData(
-                $attribute->getAttributeCode()
-            );
-        }
-        return Mage::helper('core')->jsonEncode($values);
-    }
-
-    /**
-     * Enter description here...
-     *
-     * @return array
-     */
-    public function getImageTypes()
-    {
-        $imageTypes = array();
-        foreach ($this->getMediaAttributes() as $attribute) {
-            /* @var $attribute Mage_Eav_Model_Entity_Attribute */
-            $imageTypes[$attribute->getAttributeCode()] = array(
-                'label' => $attribute->getFrontend()->getLabel() . ' '
-                         . Mage::helper('product')->__($this->getElement()->getScopeLabel($attribute)),
-                'field' => $this->getElement()->getAttributeFieldName($attribute)
-            );
-        }
-        return $imageTypes;
-    }
-
-    public function hasUseDefault()
-    {
-        foreach ($this->getMediaAttributes() as $attribute) {
-            if($this->getElement()->canDisplayUseDefault($attribute))  {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Enter description here...
-     *
-     * @return array
-     */
-    public function getMediaAttributes()
-    {
-        return $this->getElement()->getDataObject()->getMediaAttributes();
-    }
-
-    public function getImageTypesJson()
-    {
-        return Mage::helper('core')->jsonEncode($this->getImageTypes());
+        return parent::_prepareForm();
     }
 }

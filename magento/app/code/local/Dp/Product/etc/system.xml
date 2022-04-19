@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config>
+    <tabs>
+        <product translate="label" module="product">
+            <label>Products</label>
+            <sort_order>300</sort_order>
+        </product>
+    </tabs>
+    <sections>
+        <product translate="label" module="product">
+            <class>separator-top</class>
+            <label>Product Configuration</label>
+            <tab>product</tab>
+            <sort_order>130</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+        </product>
+    </sections>
+</config>

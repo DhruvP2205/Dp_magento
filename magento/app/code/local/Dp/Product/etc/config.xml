@@ -21,7 +21,6 @@
 	        <product translate="title" module="product">
 	            <title>Product</title>
 	            <sort_order>40</sort_order>
-	            <!-- action>adminhtml/product/</action -->
 	            <children>
 	                <manage translate="title" module="product">
 	                    <title>Manage Product</title>
@@ -40,10 +39,33 @@
         </layout>
 	</adminhtml>
 	<global>
+        <events>
+            <product_before_save>
+                <observers>
+                    <product_observer>
+                        <class>product/observer</class>
+                        <method>callMe</method>
+                    </product_observer>
+                </observers>        
+            </product_before_save>
+            <redirect_before>
+                <observers>
+                    <product_redirect_observer>
+                        <class>product/observer</class>
+                        <method>beforeRedirect</method>
+                    </product_redirect_observer>
+                </observers>        
+            </redirect_before>
+        </events>
 		<helpers>
             <product>
                 <class>Dp_Product_Helper</class>
             </product>
+            <catalog_helper> 
+                <rewrite> 
+                    <product>Dp_Product_Helper_Catalog_Data</product>
+                </rewrite>
+            </catalog_helper>
         </helpers>
         <blocks>
             <product>
@@ -60,6 +82,11 @@
                 <class>Dp_Product_Model</class>
                 <resourceModel>product_resource</resourceModel>
             </product>
+            <!-- <catalog> 
+                <rewrite> 
+                    <product>Dp_Product_Model_Catalog_Product</product>
+                </rewrite>
+            </catalog> -->
             <product_resource>
                 <class>Dp_Product_Model_Resource</class>
                 <deprecatedNode>product_mysql4</deprecatedNode>

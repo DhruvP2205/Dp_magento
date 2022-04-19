@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<Dp_Salesman>
-			<version>1.0.0</version>
+			<version>0.4.1</version>
 		</Dp_Salesman>
 	</modules>
 	<admin>
@@ -57,7 +57,6 @@
             </salesman>
             <salesman_resource>
                 <class>Dp_Salesman_Model_Resource</class>
-                <deprecatedNode>salesman_mysql4</deprecatedNode>
                 <entities>
                     <salesman>
                         <table>salesman</table>
@@ -65,5 +64,25 @@
                 </entities>
             </salesman_resource>
         </models>
+        <resources>
+            <salesman_setup>
+                <setup>
+                    <module>Dp_Salesman</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </salesman_setup>
+            <pro_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </pro_write>
+            <pro_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </pro_read>
+        </resources>
 	</global>
 </config>

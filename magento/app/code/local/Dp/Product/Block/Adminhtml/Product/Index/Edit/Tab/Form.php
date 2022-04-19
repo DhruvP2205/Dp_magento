@@ -6,7 +6,7 @@ class Dp_Product_Block_Adminhtml_Product_Index_Edit_Tab_Form extends Mage_Adminh
     {
         $form = new Varien_Data_Form();
         $this->setForm($form);
-        $fieldset = $form->addFieldset('product_form', array('legend'=>Mage::helper('product')->__('product information')));
+        $fieldset = $form->addFieldset('product_form', array('legend'=>Mage::helper('product')->__('Product Information')));
 
         $fieldset->addField('name', 'text', array(
          'label' => Mage::helper('product')->__('Name'),

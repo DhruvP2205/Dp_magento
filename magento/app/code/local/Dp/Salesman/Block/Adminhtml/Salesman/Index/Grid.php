@@ -56,6 +56,26 @@ class Dp_Salesman_Block_Adminhtml_Salesman_Index_Grid extends Mage_Adminhtml_Blo
             'width' => '200px'
         ));
 
+        $this->addColumn('status', array(
+          'header'    => Mage::helper('salesman')->__('status'),
+          'index'     => 'status',
+          'type'      => 'options',
+          'options'    => array(
+                1 => 'Active',
+                2 => 'Inactive'
+            ),
+        ));
+
+        $this->addColumn('created_date', array(
+            'header' => Mage::helper('salesman')->__('Created Date'),
+            'index' => 'created_date',
+        ));
+
+        $this->addColumn('updated_date', array(
+            'header' => Mage::helper('salesman')->__('Updated Date'),
+            'index' => 'updated_date',
+        ));
+
         return parent::_prepareColumns();
     }
 

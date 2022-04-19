@@ -1,6 +1,6 @@
 <?php
 
-class Dp_Product_Block_Adminhtml_Product_Index_Grid extends Mage_Adminhtml_Block_Catalog_Product_Grid
+class Dp_Product_Block_Adminhtml_Product_Index_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
     public function __construct()
     {
@@ -70,5 +70,4 @@ class Dp_Product_Block_Adminhtml_Product_Index_Grid extends Mage_Adminhtml_Block
     {
         return $this->getUrl('*/*/edit', array('id'=>$row->getId()));
     }
-
 }
