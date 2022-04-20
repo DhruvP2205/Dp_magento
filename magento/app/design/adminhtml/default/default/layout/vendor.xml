@@ -2,7 +2,7 @@
 <layout>
 	<vendor_adminhtml_vendor_index>
 		<reference name="content">
-            <block type="vendor/adminhtml_vendor" name="vendor_index"></block>
+            <block type="vendor/adminhtml_vendor_index" name="vendor_index"></block>
         </reference>
 	</vendor_adminhtml_vendor_index>
 </layout>
