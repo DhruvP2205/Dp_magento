@@ -61,24 +61,24 @@ class Dp_Vendor_Adminhtml_VendorController extends Mage_Adminhtml_Controller_Act
             {   
                 Mage::getSingleton('adminhtml/session')->addError(Mage::helper('adminhtml')->__('Invalid request.'));   
             }
-                
-            $id= ($this->getRequest()->getParam('id'));
-            $model = Mage::getModel('vendor/vendor')->load($id);
-            $model->setData('entity_id',$id);
 
-            $model->setData('first_name',$this->getRequest()->getPost('first_name'));
-            $model->setData('email',$this->getRequest()->getPost('email'));
-            $model->setData('mobile',$this->getRequest()->getPost('mobile'));
-            $model->setData('last_name',$this->getRequest()->getPost('last_name'));
-            $model->setData('status',$this->getRequest()->getPost('status'));
-            if($id){
-                $model->setData('updated_date', Mage::getModel('core/date')->date('Y-m-d H:i:s'));
+            $postData = $this->getRequest()->getPost();
+            $vendor = Mage::getModel('vendor/vendor');
+            $id = ($this->getRequest()->getParam('id'));
+            if($id)
+            {
+                $postData = array_merge(['entity_id' => $id],$postData);
+            }
+            $vendor->setData($postData);
+            if($id)
+            {
+                $vendor->setData('updated_date', Mage::getModel('core/date')->date('Y-m-d H:i:s'));
             }
             else{
-                $model->setData('created_date', Mage::getModel('core/date')->date('Y-m-d H:i:s'));
+                $vendor->setData('created_date', Mage::getModel('core/date')->date('Y-m-d H:i:s'));
             }
-            
-            $model->save();
+            $vendor->save();
+            $this->_redirect('*/*/');
             Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('vendor')->__('Vendor saved successfully.'));
         }
         catch (Exception $e)
@@ -106,7 +106,7 @@ class Dp_Vendor_Adminhtml_VendorController extends Mage_Adminhtml_Controller_Act
                 }
                 Mage::getSingleton('adminhtml/session')->addSuccess(
                 Mage::helper('adminhtml')->__('Total of %d record(s) were successfully deleted', count($sampleIds)));
-            } 
+            }
             catch (Exception $e)
             {
                 Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
