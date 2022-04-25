@@ -4,9 +4,8 @@ class Dp_Vendor_Adminhtml_VendorController extends Mage_Adminhtml_Controller_Act
 {
     public function indexAction()
     {
-        $this->_title($this->__('Vendor'))->_title($this->__('Vendor Info'));
         $this->loadLayout();
-        $this->_setActiveMenu('vendor/group');
+        $this->_setActiveMenu('vendor/vendor');
         $this->renderLayout();
     }
 
@@ -15,104 +14,85 @@ class Dp_Vendor_Adminhtml_VendorController extends Mage_Adminhtml_Controller_Act
         $this->_forward('edit');
     }
 
-    public function editAction() 
+    public function editAction()
     {
-        $this->loadLayout();
-        $model = Mage::getModel('vendor/vendor');
+        $vendorId = $this->getRequest()->getParam('id');
+        $vendor = Mage::getModel('vendor/vendor')
+            ->setStoreId($this->getRequest()->getParam('store', 0))
+            ->load($vendorId);
 
-        if ($this->getRequest()->getParam('id')) 
+        Mage::register('current_vendor', $vendor);
+        Mage::getSingleton('cms/wysiwyg_config')->setStoreId($this->getRequest()->getParam('store'));
+
+        if ($vendorId && !$vendor->getId())
         {
-            $id = $this->getRequest()->getParam('id');
-            $model->load($id);
-            if(!$model->getId()) 
-            {
-                Mage::getSingleton('adminhtml/session')->addError(Mage::helper('vendor')->__('Not Exist'));
-                $this->_redirect('*/*/index');
-                return;
-            }
-        } 
-        Mage::register('vendor_data', $model);  
-
-        $this->_addContent($this->getLayout()->createBlock('vendor/adminhtml_vendor_index_edit')) 
-            ->_addLeft($this->getLayout()->createBlock('vendor/adminhtml_vendor_index_edit_tabs'));
+            $this->_getSession()->addError(Mage::helper('vendor')->__('This vendor no longer exists'));
+            $this->_redirect('*/*/');
+            return;
+        }
+        $this->loadLayout();
         $this->renderLayout();
+    }
+
+    public function saveAction()
+    {
+        try
+        {
+            $vendorData = $this->getRequest()->getPost('account');
+            $vendor = Mage::getSingleton('vendor/vendor');
+
+            if ($vendorId = $this->getRequest()->getParam('id'))
+            {
+                if (!$vendor->load($vendorId))
+                {
+                    throw new Exception("No Row Found");
+                }
+                Mage::app()->setCurrentStore(Mage_Core_Model_App::ADMIN_STORE_ID);
+            }
+
+            $vendor->addData($vendorData);
+            $vendor->save();
+
+            Mage::getSingleton('core/session')->addSuccess("vendor data added.");
+            $this->_redirect('*/*/');
+
+        }
+        catch (Exception $e)
+        {
+            Mage::getSingleton('core/session')->addError($e->getMessage());
+            $this->_redirect('*/*/');
+        }
+
     }
 
     public function deleteAction()
     {
-        if( $this->getRequest()->getParam('id') > 0 ) 
-        {
-            $id = $this->getRequest()->getParam('id');
-            $model2 = Mage::getModel('vendor/vendor')->load($id);
-            $model = Mage::getModel('vendor/vendor');             
-            $model->setId($this->getRequest()->getParam('id'))->delete(); //delete operation
-
-            Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('adminhtml')->__('successfully deleted'));
-            $this->_redirect('vendor/adminhtml_vendor/grid');   
-        }
-        $this->_redirect('vendor/adminhtml_vendor/index');
-    }   
-
-    public function saveAction() 
-    {   
         try
         {
-            if (!$this->getRequest()->getPost())
-            {   
-                Mage::getSingleton('adminhtml/session')->addError(Mage::helper('adminhtml')->__('Invalid request.'));   
+            $vendorModel = Mage::getModel('vendor/vendor');
+
+            if (!($vendorId = (int) $this->getRequest()->getParam('id')))
+            {
+                throw new Exception('Id not found');
             }
 
-            $postData = $this->getRequest()->getPost();
-            $vendor = Mage::getModel('vendor/vendor');
-            $id = ($this->getRequest()->getParam('id'));
-            if($id)
+            if (!$vendorModel->load($vendorId))
             {
-                $postData = array_merge(['entity_id' => $id],$postData);
+                throw new Exception('vendor does not exist');
             }
-            $vendor->setData($postData);
-            if($id)
+
+            if (!$vendorModel->delete())
             {
-                $vendor->setData('updated_date', Mage::getModel('core/date')->date('Y-m-d H:i:s'));
+                throw new Exception('Error in delete record', 1);
             }
-            else{
-                $vendor->setData('created_date', Mage::getModel('core/date')->date('Y-m-d H:i:s'));
-            }
-            $vendor->save();
-            $this->_redirect('*/*/');
-            Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('vendor')->__('Vendor saved successfully.'));
+
+            Mage::getSingleton('core/session')->addSuccess($this->__('The vendor has been deleted.'));
         }
         catch (Exception $e)
         {
-            Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
+            Mage::logException($e);
+            $Mage::getSingleton('core/session')->addError($e->getMessage());
         }
-        $this->_redirect('vendor/adminhtml_vendor/index');
-    }
-
-    public function massDeleteAction() 
-    {
-        $sampleIds = $this->getRequest()->getParam('vendor');
-        if(!is_array($sampleIds))
-        {
-            Mage::getSingleton('adminhtml/session')->addError(Mage::helper('adminhtml')->__('Please select item(s)'));
-        } 
-        else
-        {
-            try
-            {
-                foreach ($sampleIds as $sampleId)
-                {
-                    $sample = Mage::getModel('vendor/vendor')->load($sampleId);
-                    $sample->delete();
-                }
-                Mage::getSingleton('adminhtml/session')->addSuccess(
-                Mage::helper('adminhtml')->__('Total of %d record(s) were successfully deleted', count($sampleIds)));
-            }
-            catch (Exception $e)
-            {
-                Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
-            }
-        }
-        $this->_redirect('vendor/adminhtml_vendor/index');
+        $this->_redirect('*/*/');
     }
 }
-
